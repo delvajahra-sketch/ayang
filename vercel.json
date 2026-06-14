@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/buat_kamu.html" }
+  ],
+  "cleanUrls": true
+}

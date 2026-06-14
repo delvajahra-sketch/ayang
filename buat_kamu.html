@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buat Kamu</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,400&family=Quicksand:wght@400;500;600&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Quicksand', sans-serif;
+    background: linear-gradient(135deg, #fdf2f6 0%, #fbe8ee 50%, #f7dde6 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Bunga dekorasi mengambang */
+  .petal {
+    position: fixed;
+    top: -10%;
+    font-size: 24px;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: fall linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: #fffdfb;
+    border-radius: 28px;
+    box-shadow: 0 10px 40px rgba(214, 124, 156, 0.18);
+    padding: 40px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    border: 1px solid #f6d8e3;
+  }
+
+  .screen {
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .screen.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .flower-emoji {
+    font-size: 48px;
+    margin-bottom: 16px;
+    display: inline-block;
+    animation: bloom 2.5s ease-in-out infinite;
+  }
+
+  @keyframes bloom {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.1) rotate(5deg); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-size: 24px;
+    color: #c2487c;
+    margin-bottom: 12px;
+    line-height: 1.4;
+  }
+
+  p.sub {
+    font-size: 15px;
+    color: #a878a0;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  /* Tempat untuk gambar bunga (user akan isi sendiri) */
+  .img-placeholder {
+    width: 100%;
+    max-width: 220px;
+    height: 160px;
+    margin: 0 auto 20px;
+    border-radius: 18px;
+    border: 2px dashed #f3b8cf;
+    background: #fff6fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e3a4c1;
+    font-size: 13px;
+    overflow: hidden;
+  }
+
+  .img-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    min-height: 50px;
+    align-items: center;
+  }
+
+  button {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #f4a6c4, #e87fa8);
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(232, 127, 168, 0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(232, 127, 168, 0.45);
+  }
+
+  .btn-secondary {
+    background: #fff;
+    color: #c2487c;
+    border: 2px solid #f3c6da;
+    position: relative;
+  }
+
+  .btn-secondary.dodge {
+    position: absolute;
+    transition: transform 0.15s ease;
+  }
+
+  /* Input tanggal */
+  input[type="date"] {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 2px solid #f3c6da;
+    color: #c2487c;
+    width: 100%;
+    margin-bottom: 24px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  input[type="date"]:focus {
+    border-color: #e87fa8;
+  }
+
+  /* Pilihan baju */
+  .outfit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .outfit-card {
+    background: #fff6fa;
+    border: 2px solid #f6d8e3;
+    border-radius: 16px;
+    padding: 16px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    color: #c2487c;
+  }
+
+  .outfit-card:hover,
+  .outfit-card.selected {
+    border-color: #e87fa8;
+    background: #fde4ee;
+    transform: scale(1.03);
+  }
+
+  .outfit-card .emoji {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* Final screen */
+  .heart {
+    font-size: 56px;
+    animation: pulse 1.4s ease-in-out infinite;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  .summary-box {
+    background: #fff6fa;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #a878a0;
+    line-height: 1.7;
+    text-align: left;
+  }
+
+  .summary-box b {
+    color: #c2487c;
+  }
+</style>
+</head>
+<body>
+
+<!-- Hiasan kelopak bunga jatuh -->
+<div class="petal" style="left:10%; animation-duration: 12s; animation-delay: 0s;">🌸</div>
+<div class="petal" style="left:30%; animation-duration: 15s; animation-delay: 2s;">🌷</div>
+<div class="petal" style="left:55%; animation-duration: 10s; animation-delay: 4s;">🌸</div>
+<div class="petal" style="left:75%; animation-duration: 14s; animation-delay: 1s;">🌺</div>
+<div class="petal" style="left:90%; animation-duration: 11s; animation-delay: 3s;">🌷</div>
+
+<div class="card">
+
+  <!-- Layar 1: Sapaan -->
+  <div class="screen active" id="screen-1">
+    <div class="flower-emoji">🌸</div>
+    <h1>Halloo sayangggkuu</h1>
+    <p class="sub">Selamat siang / sore yaa~</p>
+    <div class="img-placeholder">
+      <!-- Ganti src di bawah dengan gambar bungamu. Jika file gambarmu punya spasi, saya sudah encode spasi otomatis. -->
+      <!-- Contoh ganti: src="./namagambar.jpg" atau src="./folder/namagambar.jpg" -->
+      <img src="./bunga1.jpeg" alt="Bunga" onerror="this.parentElement.innerHTML='Letakkan gambar bunga di sini'">
+    </div>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goTo(2)">Lanjutkan</button>
+    </div>
+  </div>
+
+  <!-- Layar 2: Mau ga ketemu -->
+  <div class="screen" id="screen-2">
+    <div class="flower-emoji">🌷</div>
+    <h1>Mau ga ketemu sama aku?</h1>
+    <p class="sub">Jawab yang jujur yaa hehe</p>
+    <div class="btn-group" id="group-2">
+      <button class="btn-primary" onclick="goTo(3)">Mauuu</button>
+      <button class="btn-secondary" id="no-2" onclick="dodge(this)">Ga ahh</button>
+    </div>
+  </div>
+
+  <!-- Layar 3: Konfirmasi -->
+  <div class="screen" id="screen-3">
+    <div class="flower-emoji">🌹</div>
+    <h1>Yeyy beneran maukan?</h1>
+    <p class="sub">Pasti seneng banget nih kalau iyaa</p>
+    <div class="btn-group" id="group-3">
+      <button class="btn-primary" onclick="goTo(4)">Iyaa</button>
+      <button class="btn-secondary" id="no-3" onclick="dodge(this)">Ga ah</button>
+    </div>
+  </div>
+
+  <!-- Layar 4: Tanggal -->
+  <div class="screen" id="screen-4">
+    <div class="flower-emoji">🌼</div>
+    <h1>Pilih tanggal ketemuan kita</h1>
+    <p class="sub">Tanggal spesial buat kita berdua</p>
+    <input type="date" id="dateInput">
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goTo(5)">Lanjutkan</button>
+    </div>
+  </div>
+
+  <!-- Layar 5: Pilihan baju -->
+  <div class="screen" id="screen-5">
+    <div class="flower-emoji">🌺</div>
+    <h1>Mau pakai baju apa?</h1>
+    <p class="sub">Pilih salah satu yaa</p>
+    <div class="outfit-grid">
+      <div class="outfit-card" onclick="pickOutfit(this, 'Casual')"><span class="emoji">👕</span>Casual</div>
+      <div class="outfit-card" onclick="pickOutfit(this, 'Dress manis')"><span class="emoji">👗</span>Dress manis</div>
+      <div class="outfit-card" onclick="pickOutfit(this, 'Formal')"><span class="emoji">🧥</span>Formal</div>
+      <div class="outfit-card" onclick="pickOutfit(this, 'Streetwear')"><span class="emoji">🎒</span>Streetwear</div>
+      <div class="outfit-card" onclick="pickOutfit(this, 'Hoodie & jeans')"><span class="emoji">🧶</span>Hoodie & jeans</div>
+      <div class="outfit-card" onclick="pickOutfit(this, 'Bebas, suka-suka')"><span class="emoji">💖</span>Bebas</div>
+    </div>
+  </div>
+
+  <!-- Layar 6: Ketemu -->
+  <div class="screen" id="screen-6">
+    <div class="heart">💐</div>
+    <h1>Yeyyy ketemuu!</h1>
+    <p class="sub">Aku tunggu yaa, jangan telat hehe</p>
+    <div class="summary-box">
+      <p>Tanggal: <b id="sum-date">-</b></p>
+      <p>Outfit: <b id="sum-outfit">-</b></p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function goTo(num) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + num).classList.add('active');
+  }
+
+  // Tombol "Ga ahh" / "Ga ah" lari menghindar saat di-hover/klik
+  function dodge(btn) {
+    const group = btn.parentElement;
+    const groupRect = group.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+
+    if (!btn.classList.contains('dodge')) {
+      btn.classList.add('dodge');
+      btn.style.position = 'absolute';
+    }
+
+    const maxX = groupRect.width - btnRect.width;
+    const maxY = groupRect.height - btnRect.height;
+
+    const randX = Math.max(0, Math.random() * maxX);
+    const randY = Math.max(0, Math.random() * Math.max(maxY, 40));
+
+    btn.style.left = randX + 'px';
+    btn.style.top = randY + 'px';
+  }
+
+  // Pastikan grup tombol punya tinggi cukup untuk tombol absolute
+  document.querySelectorAll('#group-2, #group-3').forEach(g => {
+    g.style.position = 'relative';
+  });
+
+  // Hover juga memicu dodge biar makin sulit diklik
+  document.getElementById('no-2').addEventListener('mouseenter', function() { dodge(this); });
+  document.getElementById('no-3').addEventListener('mouseenter', function() { dodge(this); });
+
+  function pickOutfit(card, name) {
+    document.querySelectorAll('.outfit-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+
+    const dateVal = document.getElementById('dateInput').value;
+    const dateText = dateVal ? formatDate(dateVal) : 'belum dipilih';
+
+    document.getElementById('sum-date').textContent = dateText;
+    document.getElementById('sum-outfit').textContent = name;
+
+    setTimeout(() => goTo(6), 300);
+  }
+
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('id-ID', options);
+  }
+</script>
+
+</body>
+</html>
